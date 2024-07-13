@@ -61,8 +61,9 @@ public class BoardService {
 
         findBoard.setQuestionStatus(Board.QuestionStatus.QUESTION_DELETED);
 
-        replyService.deleteReply(findBoard.getReply().getReplyId());
-
+        if(findBoard.getReply() != null) {
+            replyService.deleteReply(findBoard.getReply().getReplyId());
+        }
         boardRepository.save(findBoard);
     }
 

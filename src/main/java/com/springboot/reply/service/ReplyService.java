@@ -1,6 +1,7 @@
 package com.springboot.reply.service;
 
 import com.springboot.board.entity.Board;
+import com.springboot.board.repository.BoardRepository;
 import com.springboot.board.service.BoardService;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
@@ -14,13 +15,19 @@ import java.util.Optional;
 @Service
 public class ReplyService {
     private final ReplyRepository replyRepository;
+    private final BoardRepository boardRepository;
+//    private final BoardService boardService;
 
-    public ReplyService(ReplyRepository replyRepository) {
+    public ReplyService(ReplyRepository replyRepository, BoardRepository boardRepository) {
         this.replyRepository = replyRepository;
+        this.boardRepository = boardRepository;
     }
     public Reply createReply(Reply reply){
         verifyExistReply(reply.getBoard().getBoardId());
-        reply.getBoard().setQuestionStatus(Board.QuestionStatus.QUESTION_ANSWERED);
+//        updateQuestionStatus(reply);
+        Optional<Board> findBoard = boardRepository.findById(reply.getBoard().getBoardId());
+        Board board = findBoard.orElseThrow(()->new BusinessLogicException(ExceptionCode.BOARD_NOT_FOUND));
+        board.setQuestionStatus(Board.QuestionStatus.QUESTION_ANSWERED);
         return replyRepository.save(reply);
     }
     public Reply updateReply(Reply reply){
